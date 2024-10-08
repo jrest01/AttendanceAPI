@@ -7,24 +7,30 @@ using Microsoft.EntityFrameworkCore;
 
 public class UsersController : ControllerBase
 {
-    private readonly attendanceContext _context;
+    IUserService _userService;
 
-    public UsersController(attendanceContext context)
+    public UsersController(IUserService userService)
     {
-        _context = context;
+        _userService = userService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+    public async Task<IActionResult> GetUsers()
     {
-        return await _context.Users.ToListAsync();
+        return Ok(await _userService.GetUsers());
     }
 
     [HttpPost]
-    public async Task<ActionResult<User>> PostUsuario(User user)
+    public async Task<IActionResult> PostUsuario(User user)
     {
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetUsers), new { id = user.UserId }, user);
+
+        if (user == null)
+        {
+            throw new ArgumentNullException(nameof(user), "El usuario no puede ser nulo");
+        }
+        await _userService.PostUsuario(user);
+        return Ok();
     }
+
+
 }

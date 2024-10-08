@@ -4,6 +4,6 @@ public class Meet
     public string Title { get; set; }
     public DateTime Date { get; set; }
 
-    public ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
+    public ICollection<Attendance>? Attendances { get; set; } = new List<Attendance>();
 
 }

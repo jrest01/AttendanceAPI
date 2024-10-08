@@ -11,7 +11,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<attendanceContext>(options =>
     options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IMeetService, MeetService>();
+builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 
 var app = builder.Build();
 

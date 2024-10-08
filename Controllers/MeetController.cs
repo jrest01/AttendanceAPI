@@ -6,24 +6,27 @@ using Microsoft.EntityFrameworkCore;
 [Route("api/[controller]")]
 public class MeetsController : ControllerBase
 {
-    private readonly attendanceContext _context;
+    IMeetService _meetService;
 
-    public MeetsController(attendanceContext context)
+    public MeetsController(IMeetService meetService)
     {
-        _context = context;
+        _meetService = meetService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Meet>>> GetMeets()
+    public async Task<ActionResult> GetMeets()
     {
-        return await _context.Meets.ToListAsync();
+        return Ok(await _meetService.GetMeets());
     }
 
     [HttpPost]
-    public async Task<ActionResult<Meet>> PostMeet(Meet meet)
+    public async Task<ActionResult> PostMeet(Meet meet)
     {
-        _context.Meets.Add(meet);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetMeets), new { id = meet.MeetId }, meet);
+        if (meet == null)
+        {
+            throw new ArgumentNullException(nameof(meet), "El meet no puede ser nulo");
+        }
+        await _meetService.PostMeet(meet);
+        return Ok();
     }
 }

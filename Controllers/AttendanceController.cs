@@ -6,24 +6,27 @@ using Microsoft.EntityFrameworkCore;
 [ApiController]
 public class AttendancesController : ControllerBase
 {
-    private readonly attendanceContext _context;
+    IAttendanceService _attendanceService;
 
-    public AttendancesController(attendanceContext context)
+    public AttendancesController(IAttendanceService attendanceService)
     {
-        _context = context;
+        _attendanceService = attendanceService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Attendance>>> GetAttendances()
+    public async Task<ActionResult> GetAttendances()
     {
-        return await _context.Attendances.ToListAsync();
+        return Ok(await _attendanceService.GetAttendances());
     }
 
     [HttpPost]
-    public async Task<ActionResult<User>> PostUsuario(Attendance attendance)
+    public async Task<ActionResult> PostAttendance(Attendance attendance)
     {
-        _context.Attendances.Add(attendance);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetAttendances), new { id = attendance.AttendanceId }, attendance);
+        if (attendance == null)
+        {
+            throw new ArgumentNullException(nameof(attendance), "El attendance no puede ser nulo");
+        }
+        await _attendanceService.PostAttendance(attendance);
+        return Ok();
     }
 }
